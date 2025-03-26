@@ -2,42 +2,40 @@ package chessdesk
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
+const space, hashtag string = " ", "#"
+
 func PrintChessDesk() {
-	var space, hashtag string = " ", "#"
 	var sideLength int
 
 	fmt.Println("Введите желаемую длину стороны доски:")
-	fmt.Scan(&sideLength)
+	_, err := fmt.Scan(&sideLength)
 
-	deskArr := make([][]string, sideLength)
-	for i := range deskArr {
-		deskArr[i] = make([]string, sideLength)
+	if err != nil {
+		fmt.Println("Введено некорректное значение, введите целое число (int)")
+		return
 	}
 
-	deskArr = getFilledDescArr(deskArr, space, hashtag)
+	deskArr := getFilledDescArr(sideLength)
 	chessDeskString := getChessDeskString(deskArr)
 
 	fmt.Println(chessDeskString)
 }
 
-func getFilledDescArr(deskArr [][]string, space string, hashtag string) [][]string {
+func getFilledDescArr(sideLength int) [][]string {
+	deskArr := make([][]string, sideLength)
+	for i := range deskArr {
+		deskArr[i] = make([]string, sideLength)
+	}
 	for i, value := range deskArr {
 		for j := range value {
-			if j%2 == 0 {
-				if i > 0 && deskArr[i-1][j] == space {
-					deskArr[i][j] = hashtag
-				} else {
-					deskArr[i][j] = space
-				}
+			if (i+j)%2 == 0 {
+				deskArr[i][j] = space
 			} else {
-				if i > 0 && deskArr[i-1][j] == hashtag {
-					deskArr[i][j] = space
-				} else {
-					deskArr[i][j] = hashtag
-				}
+				deskArr[i][j] = hashtag
 			}
 		}
 	}
@@ -45,13 +43,19 @@ func getFilledDescArr(deskArr [][]string, space string, hashtag string) [][]stri
 }
 
 func getChessDeskString(deskArr [][]string) string {
-	chessDeskString := ""
+	var builder strings.Builder
 	for i, value := range deskArr {
-		chessDeskString = chessDeskString + strings.Join(value, "")
+		_, err := builder.WriteString(strings.Join(value, ""))
+		if err != nil {
+			log.Fatal(err)
+		}
 		if i < len(deskArr) {
-			chessDeskString += "\n"
+			_, err := builder.WriteString("\n")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 
-	return chessDeskString
+	return builder.String()
 }
