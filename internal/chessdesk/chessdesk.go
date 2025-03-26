@@ -50,7 +50,10 @@ func getChessDeskString(deskArr [][]string) string {
 			log.Fatal(err)
 		}
 		if i < len(deskArr) {
-			builder.WriteString("\n")
+			_, err := builder.WriteString("\n")
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 
